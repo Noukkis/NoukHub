@@ -31,7 +31,7 @@ public class Main {
 
     private static boolean start(int port, int timeout) {
         boolean ok = false;
-        if (port < 1 && port > 65536 || timeout < 1) {
+        if (port < 1 || port > 65535 || timeout < 1) {
             return false;
         }
         try {
