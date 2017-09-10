@@ -50,16 +50,20 @@ public class User {
                 try {
                     proceed(hub, in.readLine());
                 } catch (IOException ex) {
-                    running = false;
-                    hub.disconnect(this);
-                    hub.getUsers().remove(this);
-                    try {
-                        socket.close();
-                    } catch (IOException ex1) {
-                    }
+                    stop(hub);
                 }
             }
         }).start();
+    }
+
+    private void stop(Hub hub) {
+        running = false;
+        hub.disconnect(this);
+        hub.getUsers().remove(this);
+        try {
+            socket.close();
+        } catch (IOException ex1) {
+        }
     }
 
     private void proceed(Hub hub, String line) {
@@ -89,11 +93,11 @@ public class User {
                 }
             }
         } else {
-            hub.disconnect(this);
+            stop(hub);
         }
     }
 
-    public void send(String msg) {
+    public synchronized void send(String msg) {
         out.println(msg);
         out.flush();
     }
@@ -132,9 +136,4 @@ public class User {
         final User other = (User) obj;
         return Objects.equals(this.pseudo, other.pseudo);
     }
-
-    public int getUdpPort() {
-        return udpPort;
-    }
-
 }

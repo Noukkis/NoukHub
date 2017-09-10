@@ -10,36 +10,21 @@ import java.util.HashMap;
  */
 public class Server {
 
-    private ServerSocket socket;
-    private boolean running;
-    private HashMap<String, Hub> hubs;
-    private int timeout;
+    private final ServerSocket socket;
+    private final HashMap<String, Hub> hubs;
+    private final int timeout;
 
     public Server(int port, int timeout) throws IOException {
         this.timeout = timeout;
         socket = new ServerSocket(port);
-        running = false;
         hubs = new HashMap<>();
     }
 
     public void start() {
-        running = true;
-        new Thread(() -> {
-            while (running) {
-                acceptUser();
-                clearEmptyHubs();
-            }
-        }).start();
-    }
-
-    public boolean stop() {
-        boolean res = running;
-        running = false;
-        return res;
-    }
-
-    public boolean isRunning() {
-        return running;
+        while (true) {
+            acceptUser();
+            clearEmptyHubs();
+        }
     }
 
     private void acceptUser() {
@@ -61,14 +46,17 @@ public class Server {
                 hubs.put(u.getApp(), hub);
             }
         } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 
     private void clearEmptyHubs() {
-        for (String app : hubs.keySet()) {
-            if (hubs.get(app).isEmpty()) {
-                hubs.remove(app);
-            }
-        }
+//        Iterator<String> i = hubs.keySet().iterator();
+//        while(i.hasNext()) {
+//            String app = i.next();
+//            if (hubs.get(app).isEmpty()) {
+//                i.remove();
+//            }
+//        }
     }
 }

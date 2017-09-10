@@ -28,7 +28,6 @@ public class Hub {
             u.send("unconnected::");
             if (room.getMembers().isEmpty()) {
                 rooms.remove(room);
-                room.stop();
             }
         }
     }
@@ -41,16 +40,12 @@ public class Hub {
 
     public String createRoom(User u, String msg) {
         String[] params = msg.split("::");
-        if (!connectionsRoom.containsKey(u) && (params.length == 3 || params.length == 4)) {
+        if (!connectionsRoom.containsKey(u) && (params.length == 2 || params.length == 3)) {
             try {
                 int max = Integer.parseInt(params[0]);
                 String name = params[1];
-                int dtLength = Integer.parseInt(params[2]);
-                String password = (params.length == 4) ? params[3] : null;
-                Room room = new Room(name, max, dtLength, password);
-                if(dtLength > 0) {
-                    room.receiveUDP();
-                }
+                String password = (params.length == 3) ? params[2] : null;
+                Room room = new Room(name, max, password);
                 if (name != null && name.length() >= 3 && name.length() <= 15 && isValid(name) && !rooms.contains(room) && max > 0) {
                     rooms.add(room);
                     connectionsRoom.put(u, room);
@@ -66,7 +61,7 @@ public class Hub {
         String[] params = msg.split("::");
         String name = params[0];
         String password = (params.length > 1) ? msg.replaceFirst(name + "::", "") : null;
-        Room r = new Room(name, 1, 1, password);
+        Room r = new Room(name, 1, password);
         if (!connectionsRoom.containsKey(u) && rooms.contains(r) && rooms.get(rooms.indexOf(r)).addUser(u, password)) {
             r = rooms.get(rooms.indexOf(r));
             r.send("connectedUser::" + u);
@@ -91,7 +86,7 @@ public class Hub {
         return "unconnected::";
     }
 
-    boolean isValid(String s) {
+    public boolean isValid(String s) {
         return s.matches("^[a-zA-Z0-9-.]+$");
     }
 

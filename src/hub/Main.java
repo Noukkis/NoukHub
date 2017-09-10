@@ -35,8 +35,9 @@ public class Main {
             return false;
         }
         try {
-            new Server(port, timeout).start();
+            Server server  = new Server(port, timeout);
             System.out.println("Serveur demarré sur le port " + port + " avec un timeout de connexion de " + timeout + "ms");
+            server.start();
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
             return false;
